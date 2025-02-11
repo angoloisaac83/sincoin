@@ -15,10 +15,10 @@ const Register = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [level, setLevel] = useState('1');
+  const [level, setLevel] = useState(1);
   const [balance, setBalance] = useState(10);
-  const [mininvalue, setMiningvalue] = useState('1000');
-  const [miningpower, setMiningpower] = useState('1000');
+  const [mininvalue, setMiningvalue] = useState(2);
+  const [miningpower, setMiningpower] = useState(100);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
