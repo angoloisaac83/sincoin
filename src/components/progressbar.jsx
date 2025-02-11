@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { app } from "../../firebase";
+import { app } from "../../firebase"; // Firebase config
 
 const db = getFirestore(app);
 const auth = getAuth(app);
 
 const ProgressBar = () => {
-  const totalDuration = 3600; // Reduced for testing (Change back to 3600 for 1 hour)
-
+  const totalDuration = 3600; // 1 hour (adjust as needed)
+  
   const [progress, setProgress] = useState(0);
-  const [miningPower, setMiningPower] = useState(0);
-  const [miningValue, setMiningValue] = useState(0);
+  const [miningPower, setMiningPower] = useState(1);
+  const [miningValue, setMiningValue] = useState(1);
   const [isMining, setIsMining] = useState(false);
+  const [startTime, setStartTime] = useState(null);
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    // Ensure auth is loaded properly
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
@@ -31,41 +31,36 @@ const ProgressBar = () => {
     if (!uid) return;
     const userRef = doc(db, "users", uid);
     const userSnap = await getDoc(userRef);
+    
     if (userSnap.exists()) {
       const data = userSnap.data();
-      setMiningPower(data.miningpower || 1);
-      setMiningValue(data.miningvalue || 1);
+      setMiningPower(data.miningPower || 1);
+      setMiningValue(data.miningValue || 1);
+      setStartTime(data.miningStartTime || null);
+      setIsMining(!!data.miningStartTime);
     }
   };
 
   useEffect(() => {
     let interval;
 
-    if (isMining) {
-      let startTime = sessionStorage.getItem("miningStartTime");
-      if (!startTime) {
-        startTime = Date.now().toString();
-        sessionStorage.setItem("miningStartTime", startTime);
-      } else {
-        startTime = parseInt(startTime);
-      }
-
-      interval = setInterval(() => {
-        const elapsed = (Date.now() - startTime) / 1000; // in seconds
+    if (isMining && startTime) {
+      interval = setInterval(async () => {
+        const elapsed = (Date.now() - startTime) / 1000;
         const newProgress = (elapsed / totalDuration) * 100;
 
         if (newProgress >= 100) {
           clearInterval(interval);
-          completeMining();
+          await completeMining();
         } else {
           setProgress(newProgress);
-          sessionStorage.setItem("miningProgress", newProgress.toString());
+          await updateDoc(doc(db, "users", userId), { miningProgress: newProgress });
         }
       }, 1000);
     }
 
     return () => clearInterval(interval);
-  }, [isMining]);
+  }, [isMining, startTime]);
 
   const completeMining = async () => {
     setIsMining(false);
@@ -78,27 +73,32 @@ const ProgressBar = () => {
 
     if (userSnap.exists()) {
       const data = userSnap.data();
-      const pows = miningPower * miningValue;
-      alert(pows)
-      const newBalance = (data.balance || 0) + pows;
+      const earnings = miningPower * miningValue;
+      const newBalance = (data.balance || 0) + earnings;
 
       try {
-        await updateDoc(userRef, { balance: newBalance });
+        await updateDoc(userRef, { 
+          balance: newBalance, 
+          miningStartTime: null, 
+          miningProgress: 0 
+        });
         console.log("Balance updated:", newBalance);
       } catch (error) {
         console.error("Failed to update balance:", error);
       }
     }
-
-    sessionStorage.removeItem("miningProgress");
-    sessionStorage.removeItem("miningStartTime");
   };
 
-  const startMining = () => {
+  const startMining = async () => {
+    const startTime = Date.now();
     setProgress(0);
     setIsMining(true);
-    sessionStorage.setItem("miningProgress", "0");
-    sessionStorage.setItem("miningStartTime", Date.now().toString());
+    setStartTime(startTime);
+
+    await updateDoc(doc(db, "users", userId), {
+      miningStartTime: startTime,
+      miningProgress: 0
+    });
   };
 
   const timeLeft = totalDuration - (progress / 100) * totalDuration;
