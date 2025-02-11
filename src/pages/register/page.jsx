@@ -16,6 +16,8 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [level, setLevel] = useState('1');
+  const [balance, setBalance] = useState('10');
+  const [mininvalue, setMiningvalue] = useState('1000');
   const [miningpower, setMiningpower] = useState('1000');
 
   const handleSubmit = async (e) => {
@@ -30,7 +32,9 @@ const Register = () => {
         lastName,
         email,
         level,
+        balance,
         miningpower,
+        mininvalue,
         createdAt: new Date()
       });
 
