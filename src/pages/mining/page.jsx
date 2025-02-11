@@ -1,4 +1,4 @@
-import { ChevronRight, X } from "lucide-react";
+import { ChevronRight, CirclePlus,X } from "lucide-react";
 import React, { useState } from "react";
 import DailyCheckin from "../../components/dailycheckin";
 
@@ -73,9 +73,9 @@ const Mining = () => {
           />
           <span className="flex flex-col pr-[50px] pl-3">
             <h2 className="text-[20px]">Youtube</h2>
-            <p>Suscribe to our channel⚡</p>
+            <p>Suscribe to our channel⚡+180</p>
           </span>
-          <ChevronRight className="text-3xl" />
+          <CirclePlus className="text-4xl" />
         </div>
         <div
           className="flex bg-slate-200 mb-4 rounded-lg w-full h-fit items-center justify-center px-[15px] py-[10px] cursor-pointer hover:bg-gray-100 transition"
@@ -88,9 +88,9 @@ const Mining = () => {
           />
           <span className="flex flex-col pr-[50px] pl-3">
             <h2 className="text-[20px]">Mining Power</h2>
-            <p>Suscribe to our channel⚡</p>
+            <p>Suscribe to our channel⚡+180</p>
           </span>
-          <ChevronRight className="text-3xl" />
+          <CirclePlus className="text-4xl" />
         </div>
         <div
           className="flex bg-slate-200 rounded-lg w-full h-fit items-center justify-center px-[15px] py-[10px] cursor-pointer hover:bg-gray-100 transition"
@@ -103,9 +103,9 @@ const Mining = () => {
           />
           <span className="flex flex-col pr-[50px] pl-3">
             <h2 className="text-[20px]">Mining Power</h2>
-            <p>Follow us on x⚡</p>
+            <p>Follow us on x⚡+180</p>
           </span>
-          <ChevronRight className="text-3xl" />
+          <CirclePlus className="text-4xl" />
         </div>
             </div>
           </div>

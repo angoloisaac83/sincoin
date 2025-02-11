@@ -1,58 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { app } from "../../firebase"; // Firebase config
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { app } from "../../firebase";
 
 const db = getFirestore(app);
 const auth = getAuth(app);
 
 const ProgressBar = () => {
-  const totalDuration = 3600; // 1 hour in seconds
+  const totalDuration = 3600; // Reduced for testing (Change back to 3600 for 1 hour)
 
-  // Get saved progress from session storage or set default
-  const storedProgress = sessionStorage.getItem("miningProgress");
-  const storedStartTime = sessionStorage.getItem("miningStartTime");
-
-  const [progress, setProgress] = useState(storedProgress ? parseFloat(storedProgress) : 0);
+  const [progress, setProgress] = useState(0);
   const [miningPower, setMiningPower] = useState(0);
   const [miningValue, setMiningValue] = useState(0);
-  const [isMining, setIsMining] = useState(storedStartTime !== null);
+  const [isMining, setIsMining] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const user = auth.currentUser;
+    // Ensure auth is loaded properly
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const data = userSnap.data();
-          setMiningPower(data.miningPower || 0);
-          setMiningValue(data.miningValue || 0);
-        }
+        setUserId(user.uid);
+        fetchUserData(user.uid);
       }
-    };
+    });
 
-    fetchUserData();
+    return () => unsubscribe();
   }, []);
+
+  const fetchUserData = async (uid) => {
+    if (!uid) return;
+    const userRef = doc(db, "users", uid);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      const data = userSnap.data();
+      setMiningPower(data.miningpower || 1);
+      setMiningValue(data.miningvalue || 1);
+    }
+  };
 
   useEffect(() => {
     let interval;
 
     if (isMining) {
-      const startTime = storedStartTime ? parseInt(storedStartTime) : Date.now();
-      sessionStorage.setItem("miningStartTime", startTime);
+      let startTime = sessionStorage.getItem("miningStartTime");
+      if (!startTime) {
+        startTime = Date.now().toString();
+        sessionStorage.setItem("miningStartTime", startTime);
+      } else {
+        startTime = parseInt(startTime);
+      }
 
       interval = setInterval(() => {
-        const elapsed = (Date.now() - startTime) / 1000; // Time in seconds
+        const elapsed = (Date.now() - startTime) / 1000; // in seconds
         const newProgress = (elapsed / totalDuration) * 100;
 
         if (newProgress >= 100) {
           clearInterval(interval);
-          updateBalance();
-          setIsMining(false);
-          sessionStorage.removeItem("miningProgress");
-          sessionStorage.removeItem("miningStartTime");
-          setProgress(100);
+          completeMining();
         } else {
           setProgress(newProgress);
           sessionStorage.setItem("miningProgress", newProgress.toString());
@@ -63,31 +67,40 @@ const ProgressBar = () => {
     return () => clearInterval(interval);
   }, [isMining]);
 
-  const updateBalance = async () => {
-    const user = auth.currentUser;
-    if (user) {
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+  const completeMining = async () => {
+    setIsMining(false);
+    setProgress(100);
 
-      if (userSnap.exists()) {
-        const data = userSnap.data();
-        const newBalance = (data.balance || 0) + miningPower * miningValue;
+    if (!userId) return;
 
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists()) {
+      const data = userSnap.data();
+      const pows = miningPower * miningValue;
+      alert(pows)
+      const newBalance = (data.balance || 0) + pows;
+
+      try {
         await updateDoc(userRef, { balance: newBalance });
         console.log("Balance updated:", newBalance);
+      } catch (error) {
+        console.error("Failed to update balance:", error);
       }
     }
+
+    sessionStorage.removeItem("miningProgress");
+    sessionStorage.removeItem("miningStartTime");
   };
 
-  // Start mining when button is clicked
   const startMining = () => {
-    setProgress(0); // Reset progress
+    setProgress(0);
     setIsMining(true);
     sessionStorage.setItem("miningProgress", "0");
     sessionStorage.setItem("miningStartTime", Date.now().toString());
   };
 
-  // Calculate remaining time
   const timeLeft = totalDuration - (progress / 100) * totalDuration;
   const minutesLeft = Math.floor(timeLeft / 60);
   const secondsLeft = Math.floor(timeLeft % 60);

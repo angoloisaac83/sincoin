@@ -44,7 +44,7 @@ const Profile = () => {
       <p className="text-gray-600">{auth.currentUser?.email}</p>
 
       <div className="mt-6 p-4 flex gap-3 items-center justify-center bg-gray-100 rounded-lg">
-        <p className="text-lg font-semibold">Balance:</p>
+        <p className="text-lg font-semibold">SinCoin Balance:</p>
         <p className="text-2xl font-bold text-green-600">{userData?.balance || 0} Coins</p>
       </div>
 
