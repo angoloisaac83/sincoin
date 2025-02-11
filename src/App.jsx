@@ -1,10 +1,11 @@
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Onboarding from './pages/onboarding/page';
 import Register from './pages/register/page';
 import Login from './pages/login/page';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Mining from './pages/mining/page';
 import Layout from './pages/layout';
 import Dashboard from './pages/dashboard/page';
