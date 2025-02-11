@@ -16,37 +16,37 @@ const Mining = () => {
       <main className="w-full flex flex-col gap-[17px] relative">
         {/* Daily Task Card */}
         <div
-          className="flex bg-white rounded-lg w-full h-fit items-center justify-center px-[15px] py-[10px] cursor-pointer hover:bg-gray-100 transition"
-          onClick={() => openPopup("Complete your daily tasks to earn rewards!")}
-        >
-          <img
-            className="w-[60px] rounded-full"
-            src="https://i.pinimg.com/736x/c4/1c/5c/c41c5cc63b37ac8929ad764295d946fc.jpg"
-            alt=""
-          />
-          <span className="flex flex-col pr-[50px] pl-3">
-            <h2 className="text-[23px]">Daily Task</h2>
-            <p>Daily earnings 🥳🥳</p>
-          </span>
-          <ChevronRight className="text-3xl" />
-        </div>
+  className="flex bg-white rounded-lg w-full h-fit items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
+  onClick={() => openPopup("Complete your daily tasks to earn rewards!")}
+>
+  <img
+    className="w-14 rounded-full"
+    src="https://i.pinimg.com/736x/c4/1c/5c/c41c5cc63b37ac8929ad764295d946fc.jpg"
+    alt="Daily Task Icon"
+  />
+  <span className="flex flex-col flex-grow pl-4 pr-2">
+    <h2 className="text-lg font-semibold">Daily Task</h2>
+    <p className="text-sm text-gray-600">Daily earnings 🥳🥳</p>
+  </span>
+  <ChevronRight className="text-2xl" />
+</div>
 
-        {/* Mining Power Card */}
-        <div
-          className="flex bg-white rounded-lg w-full h-fit items-center justify-center px-[15px] py-[10px] cursor-pointer hover:bg-gray-100 transition"
-          onClick={() => openPopup("Increase your mining power to earn more!")}
-        >
-          <img
-            className="w-[60px] rounded-full"
-            src="https://i.pinimg.com/736x/c4/1c/5c/c41c5cc63b37ac8929ad764295d946fc.jpg"
-            alt=""
-          />
-          <span className="flex flex-col pr-[50px] pl-3">
-            <h2 className="text-[23px]">Mining Power</h2>
-            <p>Boost your earnings ⚡</p>
-          </span>
-          <ChevronRight className="text-3xl" />
-        </div>
+{/* Mining Power Card */}
+<div
+  className="flex bg-white rounded-lg w-full h-fit items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
+  onClick={() => openPopup("Increase your mining power to earn more!")}
+>
+  <img
+    className="w-14 rounded-full"
+    src="https://i.pinimg.com/736x/c4/1c/5c/c41c5cc63b37ac8929ad764295d946fc.jpg"
+    alt="Mining Power Icon"
+  />
+  <span className="flex flex-col flex-grow pl-4 pr-2">
+    <h2 className="text-lg font-semibold">Mining Power</h2>
+    <p className="text-sm text-gray-600">Boost your earnings ⚡</p>
+  </span>
+  <ChevronRight className="text-2xl" />
+</div>
 
         <DailyCheckin />
 
