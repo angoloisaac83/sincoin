@@ -35,8 +35,8 @@ const ProgressBar = () => {
 
     if (userSnap.exists()) {
       const data = userSnap.data();
-      setMiningPower(data.miningPower || 1);
-      setMiningValue(data.miningValue || 1);
+      setMiningPower(data.miningpower || 1);
+      setMiningValue(data.miningvalue || 1);
       const savedStartTime = data.miningStartTime || null;
 
       if (savedStartTime) {
