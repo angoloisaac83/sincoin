@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { app } from "../../firebase"; // Firebase config
+import { app } from "../../firebase";
 
 const db = getFirestore(app);
 const auth = getAuth(app);
 
 const ProgressBar = () => {
-  const totalDuration = 3600; // 1 hour (adjust as needed)
-  
+  const totalDuration = 3600; // 1 hour in seconds
+
   const [progress, setProgress] = useState(0);
   const [miningPower, setMiningPower] = useState(1);
   const [miningValue, setMiningValue] = useState(1);
   const [isMining, setIsMining] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(totalDuration);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -31,13 +32,24 @@ const ProgressBar = () => {
     if (!uid) return;
     const userRef = doc(db, "users", uid);
     const userSnap = await getDoc(userRef);
-    
+
     if (userSnap.exists()) {
       const data = userSnap.data();
       setMiningPower(data.miningPower || 1);
       setMiningValue(data.miningValue || 1);
-      setStartTime(data.miningStartTime || null);
-      setIsMining(!!data.miningStartTime);
+      const savedStartTime = data.miningStartTime || null;
+
+      if (savedStartTime) {
+        const elapsed = Math.floor((Date.now() - savedStartTime) / 1000);
+        if (elapsed >= totalDuration) {
+          await completeMining(uid);
+        } else {
+          setStartTime(savedStartTime);
+          setTimeLeft(totalDuration - elapsed);
+          setProgress((elapsed / totalDuration) * 100);
+          setIsMining(true);
+        }
+      }
     }
   };
 
@@ -45,16 +57,17 @@ const ProgressBar = () => {
     let interval;
 
     if (isMining && startTime) {
-      interval = setInterval(async () => {
-        const elapsed = (Date.now() - startTime) / 1000;
+      interval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
         const newProgress = (elapsed / totalDuration) * 100;
+        const remainingTime = totalDuration - elapsed;
 
-        if (newProgress >= 100) {
+        if (remainingTime <= 0) {
           clearInterval(interval);
-          await completeMining();
+          completeMining(userId);
         } else {
           setProgress(newProgress);
-          await updateDoc(doc(db, "users", userId), { miningProgress: newProgress });
+          setTimeLeft(remainingTime);
         }
       }, 1000);
     }
@@ -62,13 +75,10 @@ const ProgressBar = () => {
     return () => clearInterval(interval);
   }, [isMining, startTime]);
 
-  const completeMining = async () => {
-    setIsMining(false);
-    setProgress(100);
+  const completeMining = async (uid) => {
+    if (!uid) return;
 
-    if (!userId) return;
-
-    const userRef = doc(db, "users", userId);
+    const userRef = doc(db, "users", uid);
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
@@ -79,31 +89,33 @@ const ProgressBar = () => {
       try {
         await updateDoc(userRef, { 
           balance: newBalance, 
-          miningStartTime: null, 
-          miningProgress: 0 
+          miningStartTime: null
         });
         console.log("Balance updated:", newBalance);
       } catch (error) {
         console.error("Failed to update balance:", error);
       }
     }
+
+    setIsMining(false);
+    setProgress(100);
+    setTimeLeft(totalDuration);
   };
 
   const startMining = async () => {
-    const startTime = Date.now();
+    const newStartTime = Date.now();
+    setStartTime(newStartTime);
     setProgress(0);
     setIsMining(true);
-    setStartTime(startTime);
+    setTimeLeft(totalDuration);
 
     await updateDoc(doc(db, "users", userId), {
-      miningStartTime: startTime,
-      miningProgress: 0
+      miningStartTime: newStartTime
     });
   };
 
-  const timeLeft = totalDuration - (progress / 100) * totalDuration;
   const minutesLeft = Math.floor(timeLeft / 60);
-  const secondsLeft = Math.floor(timeLeft % 60);
+  const secondsLeft = timeLeft % 60;
 
   return (
     <div className="w-full max-w-md mx-auto px-6 mt-10 text-center">
