@@ -20,7 +20,7 @@ const Login = () => {
       await signInWithEmailAndPassword(auth, email, password);
       sessionStorage.setItem('userEmail', email);
       toast.success('Login successful!');
-      window.location.href = "/dashboard"
+      window.location.href = "/#/dashboard"
     } catch (error) {
       toast.error('Error logging in: ' + error.message);
     }
