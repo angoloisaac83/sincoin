@@ -43,6 +43,7 @@ const Dashboard = () => {
           <>
             <main className='flex items-center justify-between h-screen flex-col'>
               <div className='w-full h-[90%] pb-[160px] gap-[40px] flex flex-col justify-center items-center'>
+                <h1 class="text-6xl font-bold gradient-text">SinCoin</h1>
                 <div className='loader'></div>
                 <div className='w-full h-fit gap-[6px] flex flex-col items-center justify-center'>
                   <span className='text-3xl'>
