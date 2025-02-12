@@ -82,16 +82,16 @@ const DailyCheckin = () => {
       <h2 className="text-2xl font-semibold mb-4">Daily Check-In</h2>
 
       {/* Calendar View */}
-      <div className="grid grid-cols-7 gap-2 mb-4">
+      <div className="flex flex-wrap gap-[10px] items-center justify-center mb-4">
         {Array.from({ length: 7 }).map((_, index) => (
           <div
             key={index}
-            className={`p-3 rounded-md font-semibold ${
+            className={`p-3 w-[60px] flex items-center justify-center text-center h-[60px] rounded-md font-semibold ${
               claimedDays.includes(index)
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : index === currentDay
                 ? "bg-blue-500 text-white"
-                : "bg-gray-100"
+                : "bg-gray-200"
             }`}
           >
             {index + 1}

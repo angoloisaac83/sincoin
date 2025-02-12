@@ -47,7 +47,7 @@ const Dashboard = () => {
                   <span className='text-3xl'>
                     Minned Balance: {userData.balance}
                   </span>
-                  <h1 className='capitalize text-2xl'>mining power: {userData.miningpower}/hour</h1>
+                  <h1 className='capitalize text-2xl'>mining power: {userData.miningPower}/hour</h1>
                   <ProgressBar />
                 </div>
               </div>
