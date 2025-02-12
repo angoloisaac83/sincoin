@@ -73,3 +73,22 @@
     background-position: top,center
   }
 }
+@keyframes smooth-gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(270deg, #00ff00, #e0ffe0);
+            background-size: 200% 200%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: smooth-gradient 4s ease-in-out infinite;
+        }

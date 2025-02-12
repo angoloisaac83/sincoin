@@ -7,16 +7,17 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 const ProgressBar = () => {
-  const totalDuration = 3600; // Reduced for testing (Change back to 3600 for 1 hour)
+  const totalDuration = 3600; // 1 hour in seconds
 
   const [progress, setProgress] = useState(0);
-  const [miningPower, setMiningPower] = useState(0);
-  const [miningValue, setMiningValue] = useState(0);
+  const [miningPower, setMiningPower] = useState(1);
+  const [miningValue, setMiningValue] = useState(1);
   const [isMining, setIsMining] = useState(false);
+  const [startTime, setStartTime] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(totalDuration);
 
   useEffect(() => {
-    // Ensure auth is loaded properly
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
@@ -31,79 +32,90 @@ const ProgressBar = () => {
     if (!uid) return;
     const userRef = doc(db, "users", uid);
     const userSnap = await getDoc(userRef);
+
     if (userSnap.exists()) {
       const data = userSnap.data();
       setMiningPower(data.miningpower || 1);
       setMiningValue(data.miningvalue || 1);
+      const savedStartTime = data.miningStartTime || null;
+
+      if (savedStartTime) {
+        const elapsed = Math.floor((Date.now() - savedStartTime) / 1000);
+        if (elapsed >= totalDuration) {
+          await completeMining(uid);
+        } else {
+          setStartTime(savedStartTime);
+          setTimeLeft(totalDuration - elapsed);
+          setProgress((elapsed / totalDuration) * 100);
+          setIsMining(true);
+        }
+      }
     }
   };
 
   useEffect(() => {
     let interval;
 
-    if (isMining) {
-      let startTime = sessionStorage.getItem("miningStartTime");
-      if (!startTime) {
-        startTime = Date.now().toString();
-        sessionStorage.setItem("miningStartTime", startTime);
-      } else {
-        startTime = parseInt(startTime);
-      }
-
+    if (isMining && startTime) {
       interval = setInterval(() => {
-        const elapsed = (Date.now() - startTime) / 1000; // in seconds
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
         const newProgress = (elapsed / totalDuration) * 100;
+        const remainingTime = totalDuration - elapsed;
 
-        if (newProgress >= 100) {
+        if (remainingTime <= 0) {
           clearInterval(interval);
-          completeMining();
+          completeMining(userId);
         } else {
           setProgress(newProgress);
-          sessionStorage.setItem("miningProgress", newProgress.toString());
+          setTimeLeft(remainingTime);
         }
       }, 1000);
     }
 
     return () => clearInterval(interval);
-  }, [isMining]);
+  }, [isMining, startTime]);
 
-  const completeMining = async () => {
-    setIsMining(false);
-    setProgress(100);
+  const completeMining = async (uid) => {
+    if (!uid) return;
 
-    if (!userId) return;
-
-    const userRef = doc(db, "users", userId);
+    const userRef = doc(db, "users", uid);
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
       const data = userSnap.data();
-      const pows = miningPower * miningValue;
-      alert(pows)
-      const newBalance = (data.balance || 0) + pows;
+      const earnings = miningPower * miningValue;
+      const newBalance = (data.balance || 0) + earnings;
 
       try {
-        await updateDoc(userRef, { balance: newBalance });
+        await updateDoc(userRef, { 
+          balance: newBalance, 
+          miningStartTime: null
+        });
         console.log("Balance updated:", newBalance);
       } catch (error) {
         console.error("Failed to update balance:", error);
       }
     }
 
-    sessionStorage.removeItem("miningProgress");
-    sessionStorage.removeItem("miningStartTime");
+    setIsMining(false);
+    setProgress(100);
+    setTimeLeft(totalDuration);
   };
 
-  const startMining = () => {
+  const startMining = async () => {
+    const newStartTime = Date.now();
+    setStartTime(newStartTime);
     setProgress(0);
     setIsMining(true);
-    sessionStorage.setItem("miningProgress", "0");
-    sessionStorage.setItem("miningStartTime", Date.now().toString());
+    setTimeLeft(totalDuration);
+
+    await updateDoc(doc(db, "users", userId), {
+      miningStartTime: newStartTime
+    });
   };
 
-  const timeLeft = totalDuration - (progress / 100) * totalDuration;
   const minutesLeft = Math.floor(timeLeft / 60);
-  const secondsLeft = Math.floor(timeLeft % 60);
+  const secondsLeft = timeLeft % 60;
 
   return (
     <div className="w-full max-w-md mx-auto px-6 mt-10 text-center">
