@@ -1,5 +1,4 @@
-import React from "react";
-import { Home, Gem, User, Settings, Gamepad2 } from "lucide-react";
+import { Home, Gem, Settings, Gamepad2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const FloatingTaskbar = () => {

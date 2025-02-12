@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { app } from "../../firebase"; // Firebase config
@@ -100,7 +100,7 @@ const DailyCheckin = () => {
       </div>
 
       <p className="text-lg">
-        Today's Reward: <span className="font-bold">{100 * Math.pow(2, currentDay)}</span>
+        Today&apos;s Reward: <span className="font-bold">{100 * Math.pow(2, currentDay)}</span>
       </p>
 
       <button

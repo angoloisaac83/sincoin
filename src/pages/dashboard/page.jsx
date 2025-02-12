@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { app } from '../../../firebase'; // Import Firebase config
-import Navbar from '../../components/navbar';
-import FloatingTaskbar from '../../components/taskbar';
 import ProgressBar from '../../components/progressbar';
 import { Loader } from 'lucide-react';
 
