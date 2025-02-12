@@ -85,7 +85,11 @@ const Register = () => {
         firstName: user.displayName?.split(' ')[0] || '',
         lastName: user.displayName?.split(' ')[1] || '',
         email: user.email,
-        referredBy, // Store referrer ID if exists
+        level,
+        balance,
+        miningPower,
+        miningValue,
+        referredBy, // Store referrer ID
         createdAt: new Date(),
       };
 
