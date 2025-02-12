@@ -56,7 +56,7 @@ const Mining = () => {
 
   const handleCopyReferral = () => {
     const referralCode = userId;
-    navigator.clipboard.writeText(`${window.location.origin}/register?ref=${referralCode}`);
+    navigator.clipboard.writeText(`${window.location.origin}/#/register?ref=${referralCode}`);
     toast.success("Referral link copied!");
   };
 
@@ -111,7 +111,7 @@ const Mining = () => {
               </p>
               <div className="flex items-center mt-3 bg-gray-100 rounded-lg p-3">
                 <span className="text-sm text-gray-800 flex-grow truncate">
-                  {`${window.location.origin}/register?ref=${userId}`}
+                  {`${window.location.origin}/#/register?ref=${userId}`}
                 </span>
                 <button
                   className="ml-2 bg-blue-500 text-white px-3 py-1 rounded-lg flex items-center hover:bg-blue-600"
