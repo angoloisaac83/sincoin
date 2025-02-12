@@ -146,7 +146,7 @@ const Register = () => {
 
         {/* Referral Section */}
         {referredBy && (
-          <p className="text-green-600 mx-auto ml-[20%] text-sm mb-4">You're signing up with a referral! 🎉</p>
+          <p className="text-green-600 mx-auto ml-[20%] text-sm mb-4">You&apos;re signing up with a referral! 🎉</p>
         )}
 
         <div className="flex flex-col justify-between mb-4">
