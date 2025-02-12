@@ -32,6 +32,7 @@ const Login = () => {
       const user = result.user;
       sessionStorage.setItem('userEmail', user.email);
       toast.success('Google login successful!');
+      window.location.href = "/#/dashboard"
     } catch (error) {
       toast.error('Error with Google login: ' + error.message);
     }

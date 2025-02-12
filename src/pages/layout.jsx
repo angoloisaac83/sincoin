@@ -48,7 +48,7 @@ const Layout = ({ children }) => {
           <Navbar />
 
           {/* Main Content */}
-          <main className="flex flex-col flex-grow items-center justify-between w-full px-4 py-6">
+          <main className="flex flex-col h-screen overflow-y-scroll flex-grow items-center justify-between w-full px-4 py-6">
             {children} {/* 👈 This allows dynamic content inside Layout */}
           </main>
 
