@@ -12,27 +12,28 @@ const TicTacToe = () => {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
   const [status, setStatus] = useState('');
+  const [gameOver, setGameOver] = useState(false);
 
   useEffect(() => {
     const winner = calculateWinner(board);
     if (winner) {
       setStatus(`Winner: ${winner}`);
-      if (winner === 'X') {
-        updateUserBalance();
-      }
+      setGameOver(true);
+      if (winner === 'X') updateUserBalance();
     } else if (board.every(Boolean)) {
       setStatus('Draw!');
-    } else if (!winner && !board.every(Boolean)) {
-      if (!isXNext) {
+      setGameOver(true);
+    } else if (!isXNext && !gameOver) {
+      setTimeout(() => {
         const computerMove = getComputerMove(board);
-        handleClick(computerMove);
-      }
+        if (computerMove !== -1) handleClick(computerMove);
+      }, 500);
     }
-  }, [board, isXNext]);
+  }, [board]);
 
   const handleClick = (index) => {
-    if (board[index] || status) return;
-    const newBoard = board.slice();
+    if (board[index] || gameOver) return;
+    const newBoard = [...board];
     newBoard[index] = isXNext ? 'X' : 'O';
     setBoard(newBoard);
     setIsXNext(!isXNext);
@@ -55,14 +56,14 @@ const TicTacToe = () => {
   const getComputerMove = (board) => {
     for (let i = 0; i < 9; i++) {
       if (board[i] === null) {
-        const newBoard = board.slice();
+        const newBoard = [...board];
         newBoard[i] = 'O';
         if (calculateWinner(newBoard)) return i;
       }
     }
     for (let i = 0; i < 9; i++) {
       if (board[i] === null) {
-        const newBoard = board.slice();
+        const newBoard = [...board];
         newBoard[i] = 'X';
         if (calculateWinner(newBoard)) return i;
       }
@@ -74,24 +75,31 @@ const TicTacToe = () => {
     setBoard(Array(9).fill(null));
     setIsXNext(true);
     setStatus('');
+    setGameOver(false);
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] bg-white text-gray-900 p-6">
-      <p className="text-2xl text-center py-2">Play simple Tic Tac Toe game to earn+10 extra sincoins per win </p>
-      <h1 className="text-3xl font-semibold mb-6">{status || `Next: ${isXNext ? <X className="w-16 h-16 text-blue-600" /> : <Circle className="w-16 h-16 text-red-500" />}`}</h1>
-      <div className="grid grid-cols-3 gap-3 p-4 bg-gray-100 rounded-xl shadow-xl">
+      <p className="text-xl font-medium text-center mb-2">Win to earn +10 coins!</p>
+      <h1 className="text-3xl font-semibold mb-4">{status || `Next: ${isXNext ? 'X' : 'O'}`}</h1>
+      <div className="grid grid-cols-3 gap-3 p-4 bg-gray-100 rounded-xl shadow-lg">
         {board.map((value, index) => (
           <button
             key={index}
             className="w-24 h-24 flex items-center justify-center bg-white text-4xl rounded-lg shadow-md hover:shadow-xl transition-all duration-200"
             onClick={() => handleClick(index)}
+            disabled={gameOver}
           >
             {value === 'X' ? <X className="w-16 h-16 text-blue-600" /> : value === 'O' ? <Circle className="w-16 h-16 text-red-500" /> : null}
           </button>
         ))}
       </div>
-      <button className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200" onClick={resetGame}>Reset Game</button>
+      <button 
+        className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200" 
+        onClick={resetGame}
+      >
+        Reset Game
+      </button>
     </div>
   );
 };
