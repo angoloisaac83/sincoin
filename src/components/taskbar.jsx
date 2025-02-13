@@ -10,9 +10,9 @@ const FloatingTaskbar = () => {
       <Link to="/mining"><button className="p-2 rounded-full hover:bg-gray-200 transition">
         <Gem size={24} />
       </button></Link>
-      <button className="p-2 rounded-full hover:bg-gray-200 transition">
+      <Link to="/game"><button className="p-2 rounded-full hover:bg-gray-200 transition">
         <Gamepad2 size={24} />
-      </button>
+      </button></Link>
       <Link to="/profile"><button className="p-2 rounded-full hover:bg-gray-200 transition">
         <Settings size={24} />
       </button></Link>
