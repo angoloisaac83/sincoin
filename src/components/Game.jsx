@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Circle } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { app } from '../../../firebase';
+import { app } from '../../firebase';
 import { toast } from 'react-toastify';
 
 const auth = getAuth(app);
