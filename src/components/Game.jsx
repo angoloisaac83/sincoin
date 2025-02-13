@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { X, Circle } from 'lucide-react'; // Importing X and Circle icons from Lucide
 
 const TicTacToe = () => {
   const [board, setBoard] = useState(Array(9).fill(null));
@@ -29,7 +30,23 @@ const TicTacToe = () => {
   };
 
   const getComputerMove = (board) => {
-    // Simple AI logic to pick the first available spot
+    // Check for winning move
+    for (let i = 0; i < 9; i++) {
+      if (board[i] === null) {
+        const newBoard = board.slice();
+        newBoard[i] = 'O';
+        if (calculateWinner(newBoard)) return i;
+      }
+    }
+    // Block player's winning move
+    for (let i = 0; i < 9; i++) {
+      if (board[i] === null) {
+        const newBoard = board.slice();
+        newBoard[i] = 'X';
+        if (calculateWinner(newBoard)) return i;
+      }
+    }
+    // Take the first available spot
     return board.findIndex(square => square === null);
   };
 
@@ -46,10 +63,10 @@ const TicTacToe = () => {
         {board.map((value, index) => (
           <button
             key={index}
-            className="w-24 h-24 text-4xl font-bold text-white bg-green-500 hover:bg-green-700 rounded"
+            className="w-24 h-24 flex items-center justify-center text-4xl font-bold bg-green-500 hover:bg-green-700 rounded"
             onClick={() => handleClick(index)}
           >
-            {value}
+            {value === 'X' ? <X className="w-16 h-16 text-white" /> : value === 'O' ? <Circle className="w-16 h-16 text-blue-500" /> : null}
           </button>
         ))}
       </div>
