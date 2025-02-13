@@ -78,7 +78,7 @@ const TicTacToe = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] bg-white text-gray-900 p-6">
-      <p className="text-2xl">Play simple Tic Tac Toe game to earn+10 extra sincoins per win <p/>
+      <p className="text-2xl">Play simple Tic Tac Toe game to earn+10 extra sincoins per win </p>
       <h1 className="text-3xl font-semibold mb-6">{status || `Next: ${isXNext ? '<X className="w-16 h-16 text-blue-600" />' : '<Circle className="w-16 h-16 text-red-500" />'}`}</h1>
       <div className="grid grid-cols-3 gap-3 p-4 bg-gray-100 rounded-xl shadow-xl">
         {board.map((value, index) => (
