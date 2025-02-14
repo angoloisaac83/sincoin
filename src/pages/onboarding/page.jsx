@@ -9,7 +9,8 @@ const Onboarding = ()=>{
                     <h1 className="text-4xl font-bold text-green-600 w-full">Begin your Mining journey with Sin Coin</h1>
                     <p>Register or Login</p>
                     <p>Click on start mining</p>
-                    <p>Complete Daily tasks and wait for airdrop</p>
+                    <p>Complete Daily tasks and claim rewards</p>
+                    <p>Participate in airdrops and wait for Launch Date</p>
                     <Link to="/register"><button className='text-white bg-green-600 text-2xl rounded-full px-[30px] py-[8px]'>Get Mining</button></Link>
                 </div>
             </main>
