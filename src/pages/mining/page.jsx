@@ -1,7 +1,7 @@
-import { ChevronRight, CirclePlus, X, Copy } from "lucide-react";
+import { ChevronRight, X, Copy } from "lucide-react";
 import { useState, useEffect } from "react";
 import DailyCheckin from "../../components/dailycheckin";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../../firebase";
 import { toast } from "react-toastify";
@@ -15,6 +15,11 @@ const Mining = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [tasks, setTasks] = useState({
+    youtube: { link: "YOUR_YOUTUBE_LINK", claimed: false, timer: 0 },
+    telegram: { link: "YOUR_TELEGRAM_LINK", claimed: false, timer: 0 },
+    twitter: { link: "YOUR_TWITTER_LINK", claimed: false, timer: 0 }
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -46,6 +51,42 @@ const Mining = () => {
       console.error("Error fetching user data:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const startTaskTimer = (taskName) => {
+    if (tasks[taskName].claimed) return;
+
+    setTasks((prev) => ({
+      ...prev,
+      [taskName]: { ...prev[taskName], timer: 120 }
+    }));
+
+    const interval = setInterval(() => {
+      setTasks((prev) => {
+        if (prev[taskName].timer <= 1) {
+          clearInterval(interval);
+          completeTask(taskName);
+          return { ...prev, [taskName]: { ...prev[taskName], timer: 0, claimed: true } };
+        }
+        return { ...prev, [taskName]: { ...prev[taskName], timer: prev[taskName].timer - 1 } };
+      });
+    }, 1000);
+  };
+
+  const completeTask = async (taskName) => {
+    if (!userId) return;
+
+    try {
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        await updateDoc(userRef, { balance: (userSnap.data().balance || 0) + 180 });
+        toast.success(`✅ +180 Sincoins added for ${taskName}`);
+      }
+    } catch (error) {
+      console.error("Error updating balance:", error);
     }
   };
 
@@ -86,23 +127,6 @@ const Mining = () => {
               <ChevronRight className="text-2xl" />
             </div>
 
-            {/* Mining Power Card */}
-            <div
-              className="flex bg-white rounded-lg w-full h-fit items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
-              onClick={() => openPopup("Increase your mining power to earn more!")}
-            >
-              <img
-                className="w-14 rounded-full"
-                src="https://i.pinimg.com/736x/c4/1c/5c/c41c5cc63b37ac8929ad764295d946fc.jpg"
-                alt="Mining Power Icon"
-              />
-              <span className="flex flex-col flex-grow pl-4 pr-2">
-                <h2 className="text-lg font-semibold">Mining Power</h2>
-                <p className="text-sm text-gray-600">Boost your earnings ⚡</p>
-              </span>
-              <ChevronRight className="text-2xl" />
-            </div>
-
             {/* Referral Section */}
             <div className="flex flex-col bg-white rounded-lg w-full p-4">
               <h2 className="text-lg font-semibold mb-2">🎁 Referral Rewards</h2>
@@ -125,53 +149,32 @@ const Mining = () => {
 
             <DailyCheckin />
 
-            {/* Popup Modal */}
-            {isOpen && (
-              <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.64)] px-[10px] bg-opacity-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative max-h-[80vh] overflow-y-auto">
-                  <button
-                    className="absolute top-3 right-3 text-gray-600 hover:text-red-500"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <X size={24} />
-                  </button>
-                  <h2 className="text-2xl font-semibold mb-4">Task Details</h2>
-                  <p className="text-gray-700 pb-4">{popupContent}</p>
-
-                  {/* Social Media Subscription Tasks */}
-                  {[
-                    {
-                      title: "YouTube",
-                      desc: "Subscribe to our channel⚡+180",
-                      img: "https://i.pinimg.com/736x/9a/e8/5e/9ae85eaa9cea5decea8817bd8fcf650b.jpg"
-                    },
-                    {
-                      title: "Telegram",
-                      desc: "Join our channel⚡+180",
-                      img: "https://i.pinimg.com/736x/20/35/96/20359662fcd835fa8637bdee18ad6697.jpg"
-                    },
-                    {
-                      title: "X (Twitter)",
-                      desc: "Follow us on X⚡+180",
-                      img: "https://i.pinimg.com/736x/c8/d3/d4/c8d3d4d12a8ea35b58e35de9ec820a22.jpg"
-                    }
-                  ].map((task, index) => (
-                    <div
-                      key={index}
-                      className="flex bg-slate-200 mb-4 rounded-lg w-full h-fit items-center justify-center px-[15px] py-[10px] cursor-pointer hover:bg-gray-100 transition"
-                      onClick={() => openPopup(task.desc)}
-                    >
-                      <img className="w-[50px] rounded-full" src={task.img} alt={task.title} />
-                      <span className="flex flex-col pr-[50px] pl-3">
-                        <h2 className="text-[20px]">{task.title}</h2>
-                        <p>{task.desc}</p>
-                      </span>
-                      <CirclePlus className="text-4xl" />
-                    </div>
-                  ))}
-                </div>
+            {/* Social Media Subscription Tasks */}
+            {Object.entries(tasks).map(([taskName, task], index) => (
+              <div
+                key={index}
+                className={`flex bg-slate-200 mb-4 rounded-lg w-full h-fit items-center justify-center px-4 py-3 cursor-pointer hover:bg-gray-100 transition ${
+                  task.claimed ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={() => {
+                  if (!task.claimed) {
+                    window.open(task.link, "_blank");
+                    startTaskTimer(taskName);
+                  }
+                }}
+              >
+                <img className="w-12 rounded-full" src={`https://i.pinimg.com/736x/${taskName}.jpg`} alt={taskName} />
+                <span className="flex flex-col pr-4 pl-3 flex-grow">
+                  <h2 className="text-lg font-semibold">{taskName.charAt(0).toUpperCase() + taskName.slice(1)}</h2>
+                  <p className="text-sm text-gray-600">
+                    {task.claimed ? "✅ Reward Claimed" : task.timer > 0 ? `⏳ ${task.timer}s left` : `⚡+180`}
+                  </p>
+                </span>
+                <span className="text-4xl">
+                  {task.timer > 0 ? `⏳ ${task.timer}s` : task.claimed ? "✅" : "+"}
+                </span>
               </div>
-            )}
+            ))}
           </>
         )}
       </main>
