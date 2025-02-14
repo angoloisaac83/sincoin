@@ -11,7 +11,6 @@ const auth = getAuth(app);
 
 const Mining = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [popupContent, setPopupContent] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
@@ -90,11 +89,6 @@ const Mining = () => {
     }
   };
 
-  const openPopup = (content) => {
-    setPopupContent(content);
-    setIsOpen(true);
-  };
-
   const handleCopyReferral = () => {
     const referralCode = userId;
     navigator.clipboard.writeText(`${window.location.origin}/#/register?ref=${referralCode}`);
@@ -113,7 +107,7 @@ const Mining = () => {
             {/* Daily Task Card */}
             <div
               className="flex bg-white rounded-lg w-full h-fit items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
-              onClick={() => openPopup("Complete your daily tasks to earn rewards!")}
+              onClick={() => setIsOpen(true)}
             >
               <img
                 className="w-14 rounded-full"
@@ -149,32 +143,32 @@ const Mining = () => {
 
             <DailyCheckin />
 
-            {/* Social Media Subscription Tasks */}
-            {Object.entries(tasks).map(([taskName, task], index) => (
-              <div
-                key={index}
-                className={`flex bg-slate-200 mb-4 rounded-lg w-full h-fit items-center justify-center px-4 py-3 cursor-pointer hover:bg-gray-100 transition ${
-                  task.claimed ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => {
-                  if (!task.claimed) {
-                    window.open(task.link, "_blank");
-                    startTaskTimer(taskName);
-                  }
-                }}
-              >
-                <img className="w-12 rounded-full" src={`https://i.pinimg.com/736x/${taskName}.jpg`} alt={taskName} />
-                <span className="flex flex-col pr-4 pl-3 flex-grow">
-                  <h2 className="text-lg font-semibold">{taskName.charAt(0).toUpperCase() + taskName.slice(1)}</h2>
-                  <p className="text-sm text-gray-600">
-                    {task.claimed ? "✅ Reward Claimed" : task.timer > 0 ? `⏳ ${task.timer}s left` : `⚡+180`}
-                  </p>
-                </span>
-                <span className="text-4xl">
-                  {task.timer > 0 ? `⏳ ${task.timer}s` : task.claimed ? "✅" : "+"}
-                </span>
+            {/* Social Media Tasks Popup */}
+            {isOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white p-5 rounded-lg w-96">
+                  <div className="flex justify-between mb-4">
+                    <h2 className="text-lg font-semibold">Daily Tasks</h2>
+                    <X className="cursor-pointer" onClick={() => setIsOpen(false)} />
+                  </div>
+                  {Object.entries(tasks).map(([taskName, task], index) => (
+                    <div
+                      key={index}
+                      className="flex bg-gray-100 mb-4 rounded-lg p-3 cursor-pointer hover:bg-gray-200 transition"
+                      onClick={() => {
+                        if (!task.claimed) {
+                          window.open(task.link, "_blank");
+                          startTaskTimer(taskName);
+                        }
+                      }}
+                    >
+                      <h2 className="text-md font-semibold flex-grow">{taskName.charAt(0).toUpperCase() + taskName.slice(1)}</h2>
+                      <span>{task.claimed ? "✅ Claimed" : "⚡+180"}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
           </>
         )}
       </main>
