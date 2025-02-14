@@ -18,7 +18,7 @@ const Mining = () => {
   const [tasks, setTasks] = useState({
     youtube: { link: "https://youtube.com/@sincoins?si=sJyEEvWTfWjIqbSb", claimed: false, timer: 0 },
     telegram: { link: "https://t.me/sin_coin1", claimed: false, timer: 0 },
-    twitter: { link: "YOUR_TWITTER_LINK", claimed: false, timer: 0 }
+    twitter: { link: "https://x.com/Sin_Coin1?t=_DF0TCS6tBlK6XMKZ6eJcQ&s=09", claimed: false, timer: 0 }
   });
 
   useEffect(() => {
