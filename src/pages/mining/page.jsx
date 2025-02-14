@@ -15,11 +15,8 @@ const Mining = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [tasks, setTasks] = useState({
-    youtube: { link: "https://youtube.com/@sincoins", claimed: false, timer: 0 },
-    telegram: { link: "https://t.me/sin_coin1", claimed: false, timer: 0 },
-    twitter: { link: "https://x.com/Sin_Coin1", claimed: false, timer: 0 }
-  });
+  const [activeTimers, setActiveTimers] = useState({});
+  const [claimedTasks, setClaimedTasks] = useState({});
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -54,43 +51,8 @@ const Mining = () => {
     }
   };
 
-  const startTaskTimer = (taskName) => {
-    if (tasks[taskName].claimed) return;
-
-    setTasks((prev) => ({
-      ...prev,
-      [taskName]: { ...prev[taskName], timer: 120 }
-    }));
-
-    const interval = setInterval(() => {
-      setTasks((prev) => {
-        if (prev[taskName].timer <= 1) {
-          clearInterval(interval);
-          completeTask(taskName);
-          return { ...prev, [taskName]: { ...prev[taskName], timer: 0, claimed: true } };
-        }
-        return { ...prev, [taskName]: { ...prev[taskName], timer: prev[taskName].timer - 1 } };
-      });
-    }, 1000);
-  };
-
-  const completeTask = async (taskName) => {
-    if (!userId) return;
-
-    try {
-      const userRef = doc(db, "users", userId);
-      const userSnap = await getDoc(userRef);
-
-      if (userSnap.exists()) {
-        await updateDoc(userRef, { balance: (userSnap.data().balance || 0) + 180 });
-        toast.success(`✅ +180 Sincoins added for ${taskName}`);
-      }
-    } catch (error) {
-      console.error("Error updating balance:", error);
-    }
-  };
-
-  const openPopup = () => {
+  const openPopup = (content) => {
+    setPopupContent(content);
     setIsOpen(true);
   };
 
@@ -99,6 +61,59 @@ const Mining = () => {
     navigator.clipboard.writeText(`${window.location.origin}/#/register?ref=${referralCode}`);
     toast.success("Referral link copied!");
   };
+
+  const startTimer = async (taskId) => {
+    setActiveTimers((prev) => ({ ...prev, [taskId]: 120 })); // 2 minutes in seconds
+
+    const interval = setInterval(() => {
+      setActiveTimers((prev) => {
+        const newTime = prev[taskId] - 1;
+        if (newTime <= 0) {
+          clearInterval(interval);
+          updateUserBalance(taskId);
+          return { ...prev, [taskId]: 0 };
+        }
+        return { ...prev, [taskId]: newTime };
+      });
+    }, 1000);
+  };
+
+  const updateUserBalance = async (taskId) => {
+    try {
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, {
+        balance: userData.balance + 180,
+      });
+      setClaimedTasks((prev) => ({ ...prev, [taskId]: true }));
+      toast.success("Reward claimed successfully!");
+    } catch (error) {
+      console.error("Error updating user balance:", error);
+    }
+  };
+
+  const socialTasks = [
+    {
+      id: "youtube",
+      title: "YouTube",
+      desc: "Subscribe to our channel⚡+180",
+      img: "https://i.pinimg.com/736x/9a/e8/5e/9ae85eaa9cea5decea8817bd8fcf650b.jpg",
+      link: "https://youtube.com/yourchannel",
+    },
+    {
+      id: "telegram",
+      title: "Telegram",
+      desc: "Join our channel⚡+180",
+      img: "https://i.pinimg.com/736x/20/35/96/20359662fcd835fa8637bdee18ad6697.jpg",
+      link: "https://t.me/yourchannel",
+    },
+    {
+      id: "twitter",
+      title: "X (Twitter)",
+      desc: "Follow us on X⚡+180",
+      img: "https://i.pinimg.com/736x/c8/d3/d4/c8d3d4d12a8ea35b58e35de9ec820a22.jpg",
+      link: "https://twitter.com/yourprofile",
+    },
+  ];
 
   return (
     <>
@@ -112,7 +127,7 @@ const Mining = () => {
             {/* Daily Task Card */}
             <div
               className="flex bg-white rounded-lg w-full h-fit items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
-              onClick={openPopup}
+              onClick={() => openPopup("Complete your daily tasks to earn rewards!")}
             >
               <img
                 className="w-14 rounded-full"
@@ -148,7 +163,7 @@ const Mining = () => {
 
             <DailyCheckin />
 
-            {/* Social Media Tasks Popup */}
+            {/* Popup Modal */}
             {isOpen && (
               <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.64)] px-[10px] bg-opacity-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative max-h-[80vh] overflow-y-auto">
@@ -159,18 +174,32 @@ const Mining = () => {
                     <X size={24} />
                   </button>
                   <h2 className="text-2xl font-semibold mb-4">Task Details</h2>
-                  {Object.entries(tasks).map(([taskName, task], index) => (
+                  <p className="text-gray-700 pb-4">{popupContent}</p>
+
+                  {/* Social Media Subscription Tasks */}
+                  {socialTasks.map((task) => (
                     <div
-                      key={index}
+                      key={task.id}
                       className="flex bg-slate-200 mb-4 rounded-lg w-full h-fit items-center justify-center px-[15px] py-[10px] cursor-pointer hover:bg-gray-100 transition"
                       onClick={() => {
-                        if (!task.claimed) {
+                        if (!claimedTasks[task.id]) {
                           window.open(task.link, "_blank");
-                          startTaskTimer(taskName);
+                          startTimer(task.id);
                         }
                       }}
                     >
-                      <h2 className="text-[20px]">{taskName.charAt(0).toUpperCase() + taskName.slice(1)}</h2>
+                      <img className="w-[50px] rounded-full" src={task.img} alt={task.title} />
+                      <span className="flex flex-col pr-[50px] pl-3">
+                        <h2 className="text-[20px]">{task.title}</h2>
+                        <p>{task.desc}</p>
+                      </span>
+                      {claimedTasks[task.id] ? (
+                        <span className="text-gray-600">Claimed</span>
+                      ) : activeTimers[task.id] > 0 ? (
+                        <span className="text-gray-600">{activeTimers[task.id]}s</span>
+                      ) : (
+                        <CirclePlus className="text-4xl" />
+                      )}
                     </div>
                   ))}
                 </div>
