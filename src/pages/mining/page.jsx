@@ -1,4 +1,4 @@
-import { ChevronRight, X, Copy } from "lucide-react";
+import { ChevronRight, CirclePlus, X, Copy } from "lucide-react";
 import { useState, useEffect } from "react";
 import DailyCheckin from "../../components/dailycheckin";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
@@ -11,13 +11,14 @@ const auth = getAuth(app);
 
 const Mining = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [popupContent, setPopupContent] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
   const [tasks, setTasks] = useState({
-    youtube: { link: "https://youtube.com/@sincoins?si=sJyEEvWTfWjIqbSb", claimed: false, timer: 0 },
+    youtube: { link: "https://youtube.com/@sincoins", claimed: false, timer: 0 },
     telegram: { link: "https://t.me/sin_coin1", claimed: false, timer: 0 },
-    twitter: { link: "https://x.com/Sin_Coin1?t=_DF0TCS6tBlK6XMKZ6eJcQ&s=09", claimed: false, timer: 0 }
+    twitter: { link: "https://x.com/Sin_Coin1", claimed: false, timer: 0 }
   });
 
   useEffect(() => {
@@ -89,6 +90,10 @@ const Mining = () => {
     }
   };
 
+  const openPopup = () => {
+    setIsOpen(true);
+  };
+
   const handleCopyReferral = () => {
     const referralCode = userId;
     navigator.clipboard.writeText(`${window.location.origin}/#/register?ref=${referralCode}`);
@@ -107,7 +112,7 @@ const Mining = () => {
             {/* Daily Task Card */}
             <div
               className="flex bg-white rounded-lg w-full h-fit items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
-              onClick={() => setIsOpen(true)}
+              onClick={openPopup}
             >
               <img
                 className="w-14 rounded-full"
@@ -145,16 +150,19 @@ const Mining = () => {
 
             {/* Social Media Tasks Popup */}
             {isOpen && (
-              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white p-5 rounded-lg w-96">
-                  <div className="flex justify-between mb-4">
-                    <h2 className="text-lg font-semibold">Daily Tasks</h2>
-                    <X className="cursor-pointer" onClick={() => setIsOpen(false)} />
-                  </div>
+              <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.64)] px-[10px] bg-opacity-50">
+                <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative max-h-[80vh] overflow-y-auto">
+                  <button
+                    className="absolute top-3 right-3 text-gray-600 hover:text-red-500"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <X size={24} />
+                  </button>
+                  <h2 className="text-2xl font-semibold mb-4">Task Details</h2>
                   {Object.entries(tasks).map(([taskName, task], index) => (
                     <div
                       key={index}
-                      className="flex bg-gray-100 mb-4 rounded-lg p-3 cursor-pointer hover:bg-gray-200 transition"
+                      className="flex bg-slate-200 mb-4 rounded-lg w-full h-fit items-center justify-center px-[15px] py-[10px] cursor-pointer hover:bg-gray-100 transition"
                       onClick={() => {
                         if (!task.claimed) {
                           window.open(task.link, "_blank");
@@ -162,8 +170,7 @@ const Mining = () => {
                         }
                       }}
                     >
-                      <h2 className="text-md font-semibold flex-grow">{taskName.charAt(0).toUpperCase() + taskName.slice(1)}</h2>
-                      <span>{task.claimed ? "✅ Claimed" : "⚡+180"}</span>
+                      <h2 className="text-[20px]">{taskName.charAt(0).toUpperCase() + taskName.slice(1)}</h2>
                     </div>
                   ))}
                 </div>
