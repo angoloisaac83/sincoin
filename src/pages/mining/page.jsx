@@ -16,8 +16,8 @@ const Mining = () => {
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
   const [tasks, setTasks] = useState({
-    youtube: { link: "YOUR_YOUTUBE_LINK", claimed: false, timer: 0 },
-    telegram: { link: "YOUR_TELEGRAM_LINK", claimed: false, timer: 0 },
+    youtube: { link: "https://youtube.com/@sincoins?si=sJyEEvWTfWjIqbSb", claimed: false, timer: 0 },
+    telegram: { link: "https://t.me/sin_coin1", claimed: false, timer: 0 },
     twitter: { link: "YOUR_TWITTER_LINK", claimed: false, timer: 0 }
   });
 
