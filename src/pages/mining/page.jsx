@@ -1,7 +1,7 @@
 import { ChevronRight, CirclePlus, X, Copy } from "lucide-react";
 import { useState, useEffect } from "react";
 import DailyCheckin from "../../components/dailycheckin";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../../firebase";
 import { toast } from "react-toastify";
@@ -23,6 +23,7 @@ const Mining = () => {
       if (user) {
         setUserId(user.uid);
         fetchUserData(user.uid);
+        fetchTimerState(user.uid); // Fetch timer state on page load
       } else {
         setIsLoading(false);
       }
@@ -51,6 +52,29 @@ const Mining = () => {
     }
   };
 
+  const fetchTimerState = async (uid) => {
+    try {
+      const timerRef = doc(db, "timers", uid);
+      const timerSnap = await getDoc(timerRef);
+
+      if (timerSnap.exists()) {
+        const timerData = timerSnap.data();
+        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+        const remainingTime = timerData.endTime - currentTime;
+
+        if (remainingTime > 0) {
+          setActiveTimers((prev) => ({ ...prev, [timerData.taskId]: remainingTime }));
+          startTimer(timerData.taskId, remainingTime);
+        } else {
+          // Timer has already expired, clear it
+          await deleteDoc(timerRef);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching timer state:", error);
+    }
+  };
+
   const openPopup = (content) => {
     setPopupContent(content);
     setIsOpen(true);
@@ -62,8 +86,18 @@ const Mining = () => {
     toast.success("Referral link copied!");
   };
 
-  const startTimer = async (taskId) => {
-    setActiveTimers((prev) => ({ ...prev, [taskId]: 120 })); // 2 minutes in seconds
+  const startTimer = async (taskId, initialTime = 120) => {
+    const endTime = Math.floor(Date.now() / 1000) + initialTime; // End time in seconds
+
+    // Store timer state in Firestore
+    try {
+      const timerRef = doc(db, "timers", userId);
+      await setDoc(timerRef, { taskId, endTime });
+    } catch (error) {
+      console.error("Error saving timer state:", error);
+    }
+
+    setActiveTimers((prev) => ({ ...prev, [taskId]: initialTime }));
 
     const interval = setInterval(() => {
       setActiveTimers((prev) => {
@@ -71,11 +105,21 @@ const Mining = () => {
         if (newTime <= 0) {
           clearInterval(interval);
           updateUserBalance(taskId);
+          deleteTimerState(taskId); // Clear timer state from Firestore
           return { ...prev, [taskId]: 0 };
         }
         return { ...prev, [taskId]: newTime };
       });
     }, 1000);
+  };
+
+  const deleteTimerState = async (taskId) => {
+    try {
+      const timerRef = doc(db, "timers", userId);
+      await deleteDoc(timerRef);
+    } catch (error) {
+      console.error("Error deleting timer state:", error);
+    }
   };
 
   const updateUserBalance = async (taskId) => {
@@ -182,7 +226,7 @@ const Mining = () => {
                       key={task.id}
                       className="flex bg-slate-200 mb-4 rounded-lg w-full h-fit items-center justify-center px-[15px] py-[10px] cursor-pointer hover:bg-gray-100 transition"
                       onClick={() => {
-                        if (!claimedTasks[task.id]) {
+                        if (!claimedTasks[task.id] && !activeTimers[task.id]) {
                           window.open(task.link, "_blank");
                           startTimer(task.id);
                         }
