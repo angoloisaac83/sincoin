@@ -1,7 +1,7 @@
 import { ChevronRight, CirclePlus, X, Copy } from "lucide-react";
 import { useState, useEffect } from "react";
 import DailyCheckin from "../../components/dailycheckin";
-import { getFirestore, doc, getDoc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../../firebase";
 import { toast } from "react-toastify";
@@ -23,7 +23,6 @@ const Mining = () => {
       if (user) {
         setUserId(user.uid);
         fetchUserData(user.uid);
-        fetchTimerState(user.uid); // Fetch timer state on page load
       } else {
         setIsLoading(false);
       }
@@ -43,37 +42,29 @@ const Mining = () => {
       const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
-        setUserData(userSnap.data());
+        const userData = userSnap.data();
+        setUserData(userData);
+
+        // Fetch active timers from the user's document
+        if (userData.timers) {
+          const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+          const updatedTimers = {};
+
+          for (const [taskId, endTime] of Object.entries(userData.timers)) {
+            const remainingTime = endTime - currentTime;
+            if (remainingTime > 0) {
+              updatedTimers[taskId] = remainingTime;
+              startTimer(taskId, remainingTime); // Resume the timer
+            }
+          }
+
+          setActiveTimers(updatedTimers);
+        }
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const fetchTimerState = async (uid) => {
-    try {
-      const timerRef = doc(db, "timers", uid);
-      const timerSnap = await getDoc(timerRef);
-
-      if (timerSnap.exists()) {
-        const timerData = timerSnap.data();
-        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-        const endTime = timerData.endTime;
-        const remainingTime = endTime - currentTime;
-
-        if (remainingTime > 0) {
-          // Timer is still active, resume it
-          setActiveTimers((prev) => ({ ...prev, [timerData.taskId]: remainingTime }));
-          startTimer(timerData.taskId, remainingTime);
-        } else {
-          // Timer has expired, clear it
-          await deleteDoc(timerRef);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching timer state:", error);
     }
   };
 
@@ -91,10 +82,12 @@ const Mining = () => {
   const startTimer = async (taskId, initialTime = 120) => {
     const endTime = Math.floor(Date.now() / 1000) + initialTime; // End time in seconds
 
-    // Store timer state in Firestore
+    // Update the user's document with the new timer
     try {
-      const timerRef = doc(db, "timers", userId);
-      await setDoc(timerRef, { taskId, endTime });
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, {
+        [`timers.${taskId}`]: endTime, // Store the timer under the `timers` field
+      });
     } catch (error) {
       console.error("Error saving timer state:", error);
     }
@@ -107,7 +100,7 @@ const Mining = () => {
         if (newTime <= 0) {
           clearInterval(interval);
           updateUserBalance(taskId);
-          deleteTimerState(taskId); // Clear timer state from Firestore
+          deleteTimerState(taskId); // Clear timer state from the user's document
           return { ...prev, [taskId]: 0 };
         }
         return { ...prev, [taskId]: newTime };
@@ -117,8 +110,10 @@ const Mining = () => {
 
   const deleteTimerState = async (taskId) => {
     try {
-      const timerRef = doc(db, "timers", userId);
-      await deleteDoc(timerRef);
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, {
+        [`timers.${taskId}`]: deleteField(), // Remove the timer from the user's document
+      });
     } catch (error) {
       console.error("Error deleting timer state:", error);
     }
