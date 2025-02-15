@@ -150,14 +150,14 @@ const Mining = () => {
       title: "Telegram",
       desc: "Join our channel⚡+180",
       img: "https://i.pinimg.com/736x/20/35/96/20359662fcd835fa8637bdee18ad6697.jpg",
-      link: "https://t.me/yourchannel",
+      link: "https://t.me/sin_coin1",
     },
     {
       id: "twitter",
       title: "X (Twitter)",
       desc: "Follow us on X⚡+180",
       img: "https://i.pinimg.com/736x/c8/d3/d4/c8d3d4d12a8ea35b58e35de9ec820a22.jpg",
-      link: "https://twitter.com/yourprofile",
+      link: "https://x.com/Sin_Coin1?s=09",
     },
   ];
 
