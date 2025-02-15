@@ -120,7 +120,8 @@ const Mining = () => {
     }
   };
 
-  const handleClaimReward = async (taskId) => {
+  const handleClaimReward = async (taskId, e) => {
+    e.stopPropagation(); // Stop event propagation
     try {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, {
@@ -244,7 +245,7 @@ const Mining = () => {
                       ) : showClaimButton[task.id] ? (
                         <button
                           className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                          onClick={() => handleClaimReward(task.id)}
+                          onClick={(e) => handleClaimReward(task.id, e)} // Pass event to stop propagation
                         >
                           Claim
                         </button>
