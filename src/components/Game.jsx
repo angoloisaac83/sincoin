@@ -6,7 +6,7 @@ const GameSelection = () => {
   const [selectedGame, setSelectedGame] = useState(null);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-white text-gray-900 p-6">
+    <div className="flex flex-col items-center justify-center w-full min-h-[80vh] bg-white text-gray-900 p-6">
       {!selectedGame ? (
         <>
           <h1 className="text-3xl font-semibold mb-6">Choose a Game</h1>
