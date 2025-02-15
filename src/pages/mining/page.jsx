@@ -60,13 +60,15 @@ const Mining = () => {
       if (timerSnap.exists()) {
         const timerData = timerSnap.data();
         const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-        const remainingTime = timerData.endTime - currentTime;
+        const endTime = timerData.endTime;
+        const remainingTime = endTime - currentTime;
 
         if (remainingTime > 0) {
+          // Timer is still active, resume it
           setActiveTimers((prev) => ({ ...prev, [timerData.taskId]: remainingTime }));
           startTimer(timerData.taskId, remainingTime);
         } else {
-          // Timer has already expired, clear it
+          // Timer has expired, clear it
           await deleteDoc(timerRef);
         }
       }
@@ -141,21 +143,21 @@ const Mining = () => {
       title: "YouTube",
       desc: "Subscribe to our channel⚡+180",
       img: "https://i.pinimg.com/736x/9a/e8/5e/9ae85eaa9cea5decea8817bd8fcf650b.jpg",
-      link: "https://youtube.com/@sincoins?si=eF707fvwr3w4BaPC",
+      link: "https://youtube.com/yourchannel",
     },
     {
       id: "telegram",
       title: "Telegram",
       desc: "Join our channel⚡+180",
       img: "https://i.pinimg.com/736x/20/35/96/20359662fcd835fa8637bdee18ad6697.jpg",
-      link: "https://t.me/sin_coin1",
+      link: "https://t.me/yourchannel",
     },
     {
       id: "twitter",
       title: "X (Twitter)",
       desc: "Follow us on X⚡+180",
       img: "https://i.pinimg.com/736x/c8/d3/d4/c8d3d4d12a8ea35b58e35de9ec820a22.jpg",
-      link: "https://x.com/Sin_Coin1?t=zZHIBj3LcuMckFhmwIau_Q&s=09",
+      link: "https://twitter.com/yourprofile",
     },
   ];
 
