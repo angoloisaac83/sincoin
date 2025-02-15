@@ -25,10 +25,10 @@ const TicTacToe = ({ onBack }) => {
     } else if (!isXNext) {
       setTimeout(() => {
         const computerMove = getComputerMove(board);
-        handleClick(computerMove);
-      }, 500); // Adds a delay to feel more natural
+        if (computerMove !== null) handleClick(computerMove);
+      }, 500);
     }
-  }, [board, isXNext]);
+  }, [board]);
 
   const handleClick = (index) => {
     if (board[index] || status) return;
@@ -53,7 +53,24 @@ const TicTacToe = ({ onBack }) => {
   };
 
   const getComputerMove = (board) => {
-    // Computer move logic (same as before)
+    const emptySquares = board.map((val, idx) => (val === null ? idx : null)).filter(v => v !== null);
+
+    // If AI can win, it moves there
+    for (let move of emptySquares) {
+      let newBoard = [...board];
+      newBoard[move] = 'O';
+      if (calculateWinner(newBoard) === 'O') return move;
+    }
+
+    // If AI can block X from winning, it moves there
+    for (let move of emptySquares) {
+      let newBoard = [...board];
+      newBoard[move] = 'X';
+      if (calculateWinner(newBoard) === 'X') return move;
+    }
+
+    // Otherwise, pick a random available spot
+    return emptySquares.length ? emptySquares[Math.floor(Math.random() * emptySquares.length)] : null;
   };
 
   const resetGame = () => {
