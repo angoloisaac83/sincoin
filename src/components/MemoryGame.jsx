@@ -7,15 +7,13 @@ import { toast } from 'react-toastify';
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const MemoryGame = () => {
+const MemoryGame = ({ onBack }) => {
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [solved, setSolved] = useState([]);
   const [status, setStatus] = useState('');
 
-  const cardImages = [
-    '🍎', '🍌', '🍇', '🍓', '🍒', '🍑', '🍍', '🥭'
-  ];
+  const cardImages = ['🍎', '🍌', '🍇', '🍓', '🍒', '🍑', '🍍', '🥭'];
 
   useEffect(() => {
     initializeCards();
@@ -83,18 +81,21 @@ const MemoryGame = () => {
     <div className="flex flex-col items-center justify-center min-h-[80vh] bg-white text-gray-900 p-6">
       <p className="text-lg text-center mb-2">Win +10 Sincoins per game</p>
       <h1 className="text-3xl font-semibold mb-6">{status || 'Memory Game'}</h1>
-      <div className="flex flex-wrap w-80 gap-3 p-4 bg-gray-100 rounded-xl shadow-lg">
+      <div className="grid grid-cols-4 gap-3 p-4 bg-gray-100 rounded-xl shadow-lg">
         {cards.map((card) => (
           <button
             key={card.id}
-            className="w-16 h-16 flex items-center justify-center bg-white text-4xl rounded-lg shadow-md hover:shadow-xl transition-all duration-200"
+            className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center bg-white text-4xl rounded-lg shadow-md hover:shadow-xl transition-all duration-200"
             onClick={() => handleClick(card.id)}
           >
             {card.flipped || solved.includes(card.id) ? card.image : '❓'}
           </button>
         ))}
       </div>
-      <button className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200" onClick={resetGame}>Reset Game</button>
+      <div className="flex gap-4 mt-6">
+        <button className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200" onClick={resetGame}>Reset Game</button>
+        <button className="px-6 py-3 bg-gray-600 text-white rounded-lg shadow-md hover:bg-gray-700 transition-all duration-200" onClick={onBack}>Back to Game Selection</button>
+      </div>
     </div>
   );
 };
