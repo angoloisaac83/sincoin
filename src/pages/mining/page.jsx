@@ -1,7 +1,7 @@
 import { ChevronRight, CirclePlus, X, Copy } from "lucide-react";
 import { useState, useEffect } from "react";
 import DailyCheckin from "../../components/dailycheckin";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../../firebase";
 import { toast } from "react-toastify";
@@ -17,12 +17,14 @@ const Mining = () => {
   const [userId, setUserId] = useState(null);
   const [activeTimers, setActiveTimers] = useState({});
   const [claimedTasks, setClaimedTasks] = useState({});
+  const [showClaimButton, setShowClaimButton] = useState({});
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
         fetchUserData(user.uid);
+        fetchTimerState(user.uid); // Fetch timer state on page load
       } else {
         setIsLoading(false);
       }
@@ -42,29 +44,38 @@ const Mining = () => {
       const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
-        const userData = userSnap.data();
-        setUserData(userData);
-
-        // Fetch active timers from the user's document
-        if (userData.timers) {
-          const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-          const updatedTimers = {};
-
-          for (const [taskId, endTime] of Object.entries(userData.timers)) {
-            const remainingTime = endTime - currentTime;
-            if (remainingTime > 0) {
-              updatedTimers[taskId] = remainingTime;
-              startTimer(taskId, remainingTime); // Resume the timer
-            }
-          }
-
-          setActiveTimers(updatedTimers);
-        }
+        setUserData(userSnap.data());
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchTimerState = async (uid) => {
+    try {
+      const timerRef = doc(db, "timers", uid);
+      const timerSnap = await getDoc(timerRef);
+
+      if (timerSnap.exists()) {
+        const timerData = timerSnap.data();
+        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+        const endTime = timerData.endTime;
+        const remainingTime = endTime - currentTime;
+
+        if (remainingTime > 0) {
+          // Timer is still active, resume it
+          setActiveTimers((prev) => ({ ...prev, [timerData.taskId]: remainingTime }));
+          startTimer(timerData.taskId, remainingTime);
+        } else {
+          // Timer has expired, show the claim button
+          setShowClaimButton((prev) => ({ ...prev, [timerData.taskId]: true }));
+          await deleteDoc(timerRef); // Clear timer state from Firestore
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching timer state:", error);
     }
   };
 
@@ -82,12 +93,10 @@ const Mining = () => {
   const startTimer = async (taskId, initialTime = 120) => {
     const endTime = Math.floor(Date.now() / 1000) + initialTime; // End time in seconds
 
-    // Update the user's document with the new timer
+    // Store timer state in Firestore
     try {
-      const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, {
-        [`timers.${taskId}`]: endTime, // Store the timer under the `timers` field
-      });
+      const timerRef = doc(db, "timers", userId);
+      await setDoc(timerRef, { taskId, endTime });
     } catch (error) {
       console.error("Error saving timer state:", error);
     }
@@ -99,8 +108,8 @@ const Mining = () => {
         const newTime = prev[taskId] - 1;
         if (newTime <= 0) {
           clearInterval(interval);
-          updateUserBalance(taskId);
-          deleteTimerState(taskId); // Clear timer state from the user's document
+          setShowClaimButton((prev) => ({ ...prev, [taskId]: true })); // Show claim button
+          deleteTimerState(taskId); // Clear timer state from Firestore
           return { ...prev, [taskId]: 0 };
         }
         return { ...prev, [taskId]: newTime };
@@ -110,22 +119,21 @@ const Mining = () => {
 
   const deleteTimerState = async (taskId) => {
     try {
-      const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, {
-        [`timers.${taskId}`]: deleteField(), // Remove the timer from the user's document
-      });
+      const timerRef = doc(db, "timers", userId);
+      await deleteDoc(timerRef);
     } catch (error) {
       console.error("Error deleting timer state:", error);
     }
   };
 
-  const updateUserBalance = async (taskId) => {
+  const handleClaimReward = async (taskId) => {
     try {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, {
         balance: userData.balance + 180,
       });
       setClaimedTasks((prev) => ({ ...prev, [taskId]: true }));
+      setShowClaimButton((prev) => ({ ...prev, [taskId]: false })); // Hide claim button
       toast.success("Reward claimed successfully!");
     } catch (error) {
       console.error("Error updating user balance:", error);
@@ -235,9 +243,16 @@ const Mining = () => {
                         <p>{task.desc}</p>
                       </span>
                       {claimedTasks[task.id] ? (
-                        <span className="text-gray-600">Claimed</span>
+                        <span className="text-gray-600">Completed</span>
                       ) : activeTimers[task.id] > 0 ? (
                         <span className="text-gray-600">{activeTimers[task.id]}s</span>
+                      ) : showClaimButton[task.id] ? (
+                        <button
+                          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                          onClick={() => handleClaimReward(task.id)}
+                        >
+                          Claim
+                        </button>
                       ) : (
                         <CirclePlus className="text-4xl" />
                       )}
