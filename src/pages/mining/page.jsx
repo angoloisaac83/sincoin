@@ -17,7 +17,6 @@ const Mining = () => {
   const [userId, setUserId] = useState(null);
   const [activeTimers, setActiveTimers] = useState({});
   const [claimedTasks, setClaimedTasks] = useState({});
-  const [showClaimButton, setShowClaimButton] = useState({});
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -69,9 +68,8 @@ const Mining = () => {
           setActiveTimers((prev) => ({ ...prev, [timerData.taskId]: remainingTime }));
           startTimer(timerData.taskId, remainingTime);
         } else {
-          // Timer has expired, show the claim button
-          setShowClaimButton((prev) => ({ ...prev, [timerData.taskId]: true }));
-          await deleteDoc(timerRef); // Clear timer state from Firestore
+          // Timer has expired, clear it
+          await deleteDoc(timerRef);
         }
       }
     } catch (error) {
@@ -108,7 +106,7 @@ const Mining = () => {
         const newTime = prev[taskId] - 1;
         if (newTime <= 0) {
           clearInterval(interval);
-          setShowClaimButton((prev) => ({ ...prev, [taskId]: true })); // Show claim button
+          updateUserBalance(taskId);
           deleteTimerState(taskId); // Clear timer state from Firestore
           return { ...prev, [taskId]: 0 };
         }
@@ -126,14 +124,13 @@ const Mining = () => {
     }
   };
 
-  const handleClaimReward = async (taskId) => {
+  const updateUserBalance = async (taskId) => {
     try {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, {
         balance: userData.balance + 180,
       });
       setClaimedTasks((prev) => ({ ...prev, [taskId]: true }));
-      setShowClaimButton((prev) => ({ ...prev, [taskId]: false })); // Hide claim button
       toast.success("Reward claimed successfully!");
     } catch (error) {
       console.error("Error updating user balance:", error);
@@ -243,16 +240,9 @@ const Mining = () => {
                         <p>{task.desc}</p>
                       </span>
                       {claimedTasks[task.id] ? (
-                        <span className="text-gray-600">Completed</span>
+                        <span className="text-gray-600">Claimed</span>
                       ) : activeTimers[task.id] > 0 ? (
                         <span className="text-gray-600">{activeTimers[task.id]}s</span>
-                      ) : showClaimButton[task.id] ? (
-                        <button
-                          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                          onClick={() => handleClaimReward(task.id)}
-                        >
-                          Claim
-                        </button>
                       ) : (
                         <CirclePlus className="text-4xl" />
                       )}
@@ -268,4 +258,4 @@ const Mining = () => {
   );
 };
 
-export default Mining;
+export default Mining;export default Mining;
