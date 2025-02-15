@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 const Onboarding = () => {
   return (
     <>
-      <main className="w-full text-center h-screen text-black bg-white flex flex-col items-center justify-between overflow-hidden">
+      <main className="w-full text-center h-screen text-black bg-white flex flex-col items-center justify-between overflow-scroll">
         {/* Hero Image Section */}
         <div className="relative w-full h-[50vh] overflow-hidden">
           <img
