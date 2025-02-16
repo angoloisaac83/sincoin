@@ -148,14 +148,14 @@ const Mining = () => {
       title: "YouTube",
       desc: "Subscribe to our channel⚡+180",
       img: "https://i.pinimg.com/736x/9a/e8/5e/9ae85eaa9cea5decea8817bd8fcf650b.jpg",
-      link: "https://youtube.com/yourchannel",
+      link: "https://youtube.com/@crestcoin?si=bq_dV_4ziokpquHR",
     },
     {
       id: "telegram",
       title: "Telegram",
       desc: "Join our channel⚡+180",
       img: "https://i.pinimg.com/736x/20/35/96/20359662fcd835fa8637bdee18ad6697.jpg",
-      link: "https://t.me/sin_coin1",
+      link: "https://t.me/CrestCoins",
     },
     {
       id: "twitter",
