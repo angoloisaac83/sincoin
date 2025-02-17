@@ -78,7 +78,7 @@ const DailyCheckin = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white shadow-md rounded-lg p-6 text-center">
+    <div className="max-w-md mx-auto bg-[rgba(0,0,0,0.34)] shadow-md rounded-lg p-6 text-center">
       <h2 className="text-2xl font-semibold mb-4">Daily Check-In</h2>
 
       {/* Calendar View */}
@@ -88,7 +88,7 @@ const DailyCheckin = () => {
             key={index}
             className={`p-3 w-[60px] flex items-center justify-center text-center h-[60px] rounded-md font-semibold ${
               claimedDays.includes(index)
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                ? "bg-[#172228] text-gray-500 cursor-not-allowed"
                 : index === currentDay
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200"
@@ -107,7 +107,7 @@ const DailyCheckin = () => {
         onClick={claimReward}
         disabled={claimedToday}
         className={`mt-4 px-6 py-3 rounded-md text-white font-semibold ${
-          claimedToday ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+          claimedToday ? "bg-gray-400 cursor-not-allowed" : "bg-[#F5D02A] hover:bg-green-700"
         } transition`}
       >
         {claimedToday ? "Claimed ✅" : "Claim Reward 🎁"}

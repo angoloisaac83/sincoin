@@ -123,7 +123,7 @@ const Register = () => {
         animate={{ opacity: 1, scale: 1 }} 
         transition={{ duration: 0.5 }}
       >
-        <span className="bg-green-500 w-1/2 flex items-center justify-center text-black rounded-full text-center h-full">Register</span>
+        <span className="bg-[#F5D02A] w-1/2 flex items-center justify-center text-black rounded-full text-center h-full">Register</span>
         <Link className="bg-transparent w-1/2 flex items-center justify-center text-black rounded-full text-center h-full" to="/login">Log In</Link>
       </motion.div>
 
@@ -157,7 +157,7 @@ const Register = () => {
 
         {/* Referral Section */}
         {referredBy && (
-          <p className="text-green-600 mx-auto ml-[20%] text-sm mb-4">You&apos;re signing up with a referral! 🎉</p>
+          <p className="text-[#F5D02A] mx-auto ml-[20%] text-sm mb-4">You&apos;re signing up with a referral! 🎉</p>
         )}
 
         <div className="flex flex-col justify-between py-[15px] mb-4">
@@ -167,7 +167,7 @@ const Register = () => {
           </button>
         </div>
 
-        <button type="submit" className="w-full bg-green-600 text-white px-4 py-[15px] rounded-full hover:bg-green-700">
+        <button type="submit" className="w-full bg-[#F5D02A] text-white px-4 py-[15px] rounded-full hover:bg-green-700">
           Register
         </button>
       </motion.form>

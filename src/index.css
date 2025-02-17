@@ -92,3 +92,6 @@
             color: transparent;
             animation: smooth-gradient 4s ease-in-out infinite;
         }
+.primary{
+  background: #172228;
+}

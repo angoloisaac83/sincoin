@@ -122,7 +122,7 @@ const ProgressBar = () => {
       {!isMining ? (
         <button
           onClick={startMining}
-          className="bg-green-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-green-700 transition"
+          className="bg-[#F5D02A] text-white py-3 px-6 rounded-lg text-xl font-semibold hover:bg-green-700 transition"
         >
           Start Mining
         </button>
@@ -130,7 +130,7 @@ const ProgressBar = () => {
         <>
           <div className="bg-gray-300 rounded-full overflow-hidden h-6 w-full mt-4">
             <div
-              className="bg-green-600 h-full rounded-full transition-all duration-1000"
+              className="bg-[#F5D02A] h-full rounded-full transition-all duration-1000"
               style={{ width: `${progress}%` }}
             />
           </div>

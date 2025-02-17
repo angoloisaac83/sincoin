@@ -80,14 +80,14 @@ const TicTacToe = ({ onBack }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-white text-gray-900 p-6">
+    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-[rgba(0,0,0,0.34)] text-white p-6">
       <p className="text-lg text-center mb-2">Win +10 Sincoins per game</p>
       <h1 className="text-3xl font-semibold mb-6">{status || `Next: ${isXNext ? 'X' : 'O'}`}</h1>
       <div className="grid grid-cols-3 gap-3 p-4 bg-gray-100 rounded-xl shadow-lg">
         {board.map((value, index) => (
           <button
             key={index}
-            className="w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center bg-white text-4xl rounded-lg shadow-md hover:shadow-xl transition-all duration-200"
+            className="w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center bg-[rgba(0,0,0,0.34)] text-4xl rounded-lg shadow-md hover:shadow-xl transition-all duration-200"
             onClick={() => handleClick(index)}
           >
             {value === 'X' ? <X className="w-12 h-12 sm:w-16 sm:h-16 text-blue-600" /> : value === 'O' ? <Circle className="w-12 h-12 sm:w-16 sm:h-16 text-red-500" /> : null}

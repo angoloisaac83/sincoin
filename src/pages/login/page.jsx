@@ -49,7 +49,7 @@ const Login = () => {
         <Link className="bg-transparent w-[50%] flex items-center justify-center text-black rounded-full text-center h-full" to="/register">
           <span className="bg-transparent w-[50%] flex items-center justify-center text-black rounded-full text-center h-full">Register</span>
         </Link>
-        <span className="bg-green-500 w-[50%] flex items-center justify-center text-black rounded-full text-center h-full">Log In</span>
+        <span className="bg-[#F5D02A] w-[50%] flex items-center justify-center text-black rounded-full text-center h-full">Log In</span>
       </motion.div>
 
       <motion.form 
@@ -93,7 +93,7 @@ const Login = () => {
         </div>
         <button
           type="submit"
-          className="w-full bg-green-600 text-white px-[10px] py-[15px] rounded-full hover:bg-green-700"
+          className="w-full bg-[#F5D02A] text-white px-[10px] py-[15px] rounded-full hover:bg-green-700"
         >
           Log In
         </button>

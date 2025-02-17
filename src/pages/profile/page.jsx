@@ -83,7 +83,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="w-full h-[80vh] overflow-y-scroll mx-auto bg-white shadow-lg rounded-lg p-6 text-center">
+    <div className="w-full h-[80vh] overflow-y-scroll mx-auto bg-[rgba(0,0,0,0.34)] shadow-lg rounded-lg p-6 text-center">
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[300px]">
           <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-opacity-75"></div>
@@ -98,15 +98,15 @@ const Profile = () => {
           </h2>
           <p className="text-gray-600">{auth.currentUser?.email}</p>
 
-          <div className="mt-6 p-4 flex gap-3 items-center justify-center bg-gray-100 rounded-lg">
-            <p className="text-lg font-semibold">SinCoin Balance:</p>
-            <p className="text-2xl font-bold text-green-600">
+          <div className="mt-6 p-4 flex gap-3 items-center justify-center bg-[rgba(0,0,0,0.34)] rounded-lg">
+            <p className="text-lg font-semibold">CrestCoin Balance:</p>
+            <p className="text-2xl font-bold text-[#F5D02A]">
               {userData?.balance || 0} Coins
             </p>
           </div>
 
           {/* 🔗 Referral Section */}
-          <div className="mt-6 p-4 bg-gray-100 rounded-lg text-left">
+          <div className="mt-6 p-4 bg-[rgba(0,0,0,0.34)] rounded-lg text-left">
             <h3 className="text-lg font-semibold">Your Referral Link</h3>
             <div className="flex items-center mt-2 bg-white p-2 rounded-lg border">
               <input
@@ -122,12 +122,12 @@ const Profile = () => {
           </div>
 
           {/* 👥 Referred Users Section */}
-          <div className="mt-6 p-4 overflow-y-scroll bg-gray-100 rounded-lg text-left">
+          <div className="mt-6 p-4 overflow-y-scroll bg-[rgba(0,0,0,0.34)] rounded-lg text-left">
             <h3 className="text-lg font-semibold">Referred Users</h3>
             {referredUsers.length > 0 ? (
               <ul className="mt-2">
                 {referredUsers.map((user, index) => (
-                  <li key={index} className="bg-white p-2 rounded-lg mb-2">
+                  <li key={index} className="bg-[rgba(0,0,0,0.34)] p-2 rounded-lg mb-2">
                     {user.firstName || "User"} {user.lastName || ""}
                     <span className="text-gray-500 text-sm"> ({user.email})</span>
                   </li>

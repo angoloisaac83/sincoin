@@ -36,11 +36,11 @@ const Layout = ({ children }) => {
   }, []);
 
   return (
-    <div className="bg-slate-200 min-h-screen flex flex-col">
+    <div className="bg-[#172228] text-white min-h-screen flex flex-col">
       {loading ? (
         // Loader centered on the page
         <div className="flex items-center justify-center h-screen">
-          <Loader className="animate-spin text-gray-600 w-12 h-12" />
+          <Loader className="animate-spin text-white w-12 h-12" />
         </div>
       ) : userData ? (
         <>

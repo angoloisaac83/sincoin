@@ -177,7 +177,7 @@ const Mining = () => {
           <>
             {/* Daily Task Card */}
             <div
-              className="flex bg-white rounded-lg w-full h-fit items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
+              className="flex bg-[rgba(0,0,0,0.34)] rounded-lg w-full h-fit items-center justify-between px-4 py-3 cursor-pointer hover:bg-[rgba(0,0,0,0.14)] transition"
               onClick={() => openPopup("Complete your daily tasks to earn rewards!")}
             >
               <img
@@ -193,13 +193,13 @@ const Mining = () => {
             </div>
 
             {/* Referral Section */}
-            <div className="flex flex-col bg-white rounded-lg w-full p-4">
+            <div className="flex flex-col bg-[rgba(0,0,0,0.34)] rounded-lg w-full p-4">
               <h2 className="text-lg font-semibold mb-2">🎁 Referral Rewards</h2>
               <p className="text-sm text-gray-600">
                 Invite friends and earn <span className="font-bold">500 coins</span> for every successful signup!
               </p>
-              <div className="flex items-center mt-3 bg-gray-100 rounded-lg p-3">
-                <span className="text-sm text-gray-800 flex-grow truncate">
+              <div className="flex items-center mt-3 bg-g[rgba(0,0,0,0.14)]rounded-lg p-3">
+                <span className="text-sm text-gray-200 flex-grow truncate">
                   {`${window.location.origin}/#/register?ref=${userId}`}
                 </span>
                 <button
@@ -216,8 +216,8 @@ const Mining = () => {
 
             {/* Popup Modal */}
             {isOpen && (
-              <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.64)] px-[10px] bg-opacity-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative max-h-[80vh] overflow-y-auto">
+              <div className="fixed inset-0 flex items-center justify-center bg-[#172228] px-[10px] bg-opacity-50">
+                <div className="bg-[rgba(0,0,0,0.34)] p-6 rounded-lg shadow-lg max-w-md w-full relative max-h-[80vh] overflow-y-auto">
                   <button
                     className="absolute top-3 right-3 text-gray-600 hover:text-red-500"
                     onClick={() => setIsOpen(false)}
@@ -231,7 +231,7 @@ const Mining = () => {
                   {socialTasks.map((task) => (
                     <div
                       key={task.id}
-                      className="flex bg-slate-200 mb-4 rounded-lg w-full h-fit items-center justify-center px-[15px] py-[10px] cursor-pointer hover:bg-gray-100 transition"
+                      className="flex bg-[rgba(0,0,0,0.24)] mb-4 rounded-lg w-full h-fit items-center justify-center px-[15px] py-[10px] cursor-pointer hover:bg-[rgba(0,0,0,0.14)] transition"
                       onClick={() => {
                         if (!claimedTasks[task.id] && !activeTimers[task.id]) {
                           window.open(task.link, "_blank");
@@ -250,7 +250,7 @@ const Mining = () => {
                         <span className="text-gray-600">{activeTimers[task.id]}s</span>
                       ) : showClaimButton[task.id] ? (
                         <button
-                          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-[#F5D02A]"
                           onClick={(e) => handleClaimReward(task.id, e)} // Pass event to stop propagation
                         >
                           Claim

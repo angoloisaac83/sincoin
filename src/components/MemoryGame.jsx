@@ -78,14 +78,14 @@ const MemoryGame = ({ onBack }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-white text-gray-900 p-6">
+    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-[rgba(0,0,0,0.34)] text-white p-6">
       <p className="text-lg text-center mb-2">Win +10 Sincoins per game</p>
       <h1 className="text-3xl font-semibold mb-6">{status || 'Memory Game'}</h1>
-      <div className="grid grid-cols-4 gap-3 p-4 bg-gray-100 rounded-xl shadow-lg">
+      <div className="grid grid-cols-4 gap-3 p-4 bg-[rgba(232,232,232,0.79)] rounded-xl shadow-lg">
         {cards.map((card) => (
           <button
             key={card.id}
-            className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center bg-white text-4xl rounded-lg shadow-md hover:shadow-xl transition-all duration-200"
+            className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center bg-[rgba(0,0,0,0.34)] text-4xl rounded-lg shadow-md hover:shadow-xl transition-all duration-200"
             onClick={() => handleClick(card.id)}
           >
             {card.flipped || solved.includes(card.id) ? card.image : '❓'}
