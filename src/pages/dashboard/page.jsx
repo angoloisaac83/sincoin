@@ -43,7 +43,18 @@ const Dashboard = () => {
             <main className='flex items-center justify-between h-screen flex-col'>
               <div className='w-full h-[90%] pb-[160px] gap-[40px] flex flex-col justify-center items-center'>
                 <h1 className="text-5xl font-bold flex items-center justify-center"><img src={logo} className='w-[50px] h-[50px] object-contain pb-[8px]' alt="" />Crest <span className='text-[#F5D02A]'>Coin</span> </h1>
-                <div className='loader'></div>
+                {/* <div className='loader'></div> */}
+                <div className="hourglassBackground">
+                  <div className="hourglassContainer">
+                    <div className="hourglassCurves"></div>
+                    <div className="hourglassCapTop"></div>
+                    <div className="hourglassGlassTop"></div>
+                    <div className="hourglassSand"></div>
+                    <div className="hourglassSandStream"></div>
+                    <div className="hourglassCapBottom"></div>
+                    <div className="hourglassGlass"></div>
+                  </div>
+                </div>
                 <div className='w-full h-fit gap-[6px] flex flex-col items-center justify-center'>
                   <span className='text-3xl'>
                     Minned Balance: {userData.balance}

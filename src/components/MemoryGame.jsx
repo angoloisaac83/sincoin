@@ -78,10 +78,10 @@ const MemoryGame = ({ onBack }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-[rgba(0,0,0,0.34)] text-white p-6">
+    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-[rgba(0,0,0,0.34)] text-white p-2">
       <p className="text-lg text-center mb-2">Win +10 Sincoins per game</p>
       <h1 className="text-3xl font-semibold mb-6">{status || 'Memory Game'}</h1>
-      <div className="grid grid-cols-4 gap-3 p-4 bg-[rgba(232,232,232,0.79)] rounded-xl shadow-lg">
+      <div className="flex flex-wrap gap-2 items-center justify-between p-2 bg-[rgba(232,232,232,0.79)] rounded-xl shadow-lg">
         {cards.map((card) => (
           <button
             key={card.id}
