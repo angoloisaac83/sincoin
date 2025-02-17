@@ -9,6 +9,10 @@ import { Loader } from 'lucide-react';
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+export const formatBalance = (balance) => {
+    return balance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,7 +61,7 @@ const Dashboard = () => {
                 </div>
                 <div className='w-full h-fit gap-[6px] flex flex-col items-center justify-center'>
                   <span className='text-3xl'>
-                    Minned Balance: {userData.balance}
+                    Minned Balance: {formatBalance(userData.balance)}
                   </span>
                   <h1 className='capitalize text-2xl'>mining power: {userData.miningPower}/hour</h1>
                   <ProgressBar />

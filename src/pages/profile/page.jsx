@@ -10,6 +10,10 @@ import "react-toastify/dist/ReactToastify.css";
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+export const formatBalance = (balance) => {
+    return balance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
 const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [referredUsers, setReferredUsers] = useState([]);
@@ -101,7 +105,7 @@ const Profile = () => {
           <div className="mt-6 p-4 flex gap-3 items-center justify-center bg-[rgba(0,0,0,0.34)] rounded-lg">
             <p className="text-lg font-semibold">CrestCoin Balance:</p>
             <p className="text-2xl font-bold text-[#F5D02A]">
-              {userData?.balance || 0} Coins
+            {formatBalance(userData?.balance || 0)} Coins
             </p>
           </div>
 
